@@ -1,0 +1,17 @@
+export const state = {
+  obstacles: [],
+  map: null,
+  directionsService: null,
+  directionsRenderer: null,
+  rotaPolyline: null,
+  obstacleMarkers: [],
+  carregamentoEmAndamento: false,
+  basesCarregadas: false,
+  rotaAtual: null,
+  obstaculosNaRota: [],
+  rotaPathDenso: [],
+  marcadorPosicao: null,
+  circuloPrecisao: null,
+  watchIdGeo: null,
+  filtroCriticosAtivo: false
+};

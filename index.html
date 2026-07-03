@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Transpes GO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <img src="logo-transpes.png" alt="Logo">
+    <span class="header-title">TRANSPES GO</span>
+    <span class="header-sub">Sistema de análise de rota e obstáculos</span>
+  </header>
+
+  <div class="container">
+    <div class="panel">
+      <div class="panel-scroll">
+        <div class="section">
+          <div class="status-bar">
+            <div class="status-dot loading" id="statusDot"></div>
+            <span id="status">Inicializando...</span>
+          </div>
+          <div id="log"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Definir rota</div>
+          <label>Origem</label>
+          <input id="origem" type="text" placeholder="Endereço de origem">
+          <label>Destino</label>
+          <input id="destino" type="text" placeholder="Endereço de destino">
+          <button id="btnCalcular" class="btn btn-primary" onclick="calcularRota()">
+            Calcular rota
+          </button>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Parâmetros do veículo</div>
+          <label>Altura do caminhão (m)</label>
+          <input id="alturaCaminhao" type="number" step="0.01" placeholder="Ex: 4.40">
+          <label>Largura do conjunto (m)</label>
+          <input id="larguraConjunto" type="number" step="0.01" placeholder="Ex: 2.60">
+          <button id="btnVerificar" class="btn btn-secondary" onclick="verificarObstaculosNaRota()">
+            Verificar obstáculos na rota
+          </button>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Exportar</div>
+          <button class="btn btn-ok" onclick="compartilharRota()" id="btnCompartilhar">
+            Compartilhar rota
+          </button>
+
+          <div class="export-area" id="linkArea" style="display:none">
+            <div style="font-size:11px; color:var(--muted); margin-bottom:4px">Link da rota (abre no Transpes GO com tudo pronto):</div>
+            <span id="linkCompartilhado" class="export-link" style="cursor:default">Link não gerado ainda</span>
+            <button class="copy-btn" onclick="copiarLink()">📋 Copiar link</button>
+          </div>
+        </div>
+
+        <div class="section" id="secaoResultados" style="display:none">
+          <div class="section-title">Obstáculos na rota</div>
+          <div class="resumo-bar">
+            <div class="resumo-card">
+              <div class="num" id="numTotal">0</div>
+              <div class="label-r">Total encontrado</div>
+            </div>
+            <div class="resumo-card clicavel" id="cardCritico" onclick="toggleFiltrosCriticos()" title="Clique para filtrar só os críticos">
+              <div class="num critico" id="numCritico">0</div>
+              <div class="label-r">Críticos</div>
+            </div>
+          </div>
+          <div class="filtro-hint" id="filtroHint" style="display:none">Mostrando apenas obstáculos críticos — clique em Críticos para ver todos</div>
+          <div id="resultadoContainer"></div>
+        </div>
+      </div>
+
+      <div class="footer">
+        Desenvolvido por <strong>Caio Bertolato Pereira</strong> — caio.pereira@transpes.com.br
+      </div>
+    </div>
+
+    <div id="map"></div>
+  </div>
+
+  <script type="module">
+    window.__transpesAppReady = import('./js/app.js');
+    window.__transpesInitMap = async function () {
+      await window.__transpesAppReady;
+      if (typeof window.initMap === 'function') {
+        return window.initMap();
+      }
+    };
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsCCdeA0KSgHffeuSmsDyaGT86ZJytIz4&libraries=geometry,places&callback=__transpesInitMap" async defer></script>
+</body>
+</html>

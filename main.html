@@ -1,0 +1,1599 @@
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Transpes GO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface2: #edf2f8;
+  --border: #d3dde8;
+  --accent: #1a73e8;
+  --accent2: #ea4335;
+  --danger: #d93025;
+  --ok: #188038;
+  --text: #202124;
+  --muted: #5f6368;
+  --panel-w: 400px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: var(--surface);
+  border-bottom: 2px solid var(--accent);
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+header img { height: 100px; }
+
+.header-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent);
+}
+
+.header-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.panel {
+  width: var(--panel-w);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.panel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.panel-scroll::-webkit-scrollbar { width: 4px; }
+.panel-scroll::-webkit-scrollbar-track { background: transparent; }
+.panel-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.section {
+  margin-bottom: 18px;
+}
+
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  margin-top: 10px;
+  text-transform: uppercase;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--accent);
+}
+
+input::placeholder { color: var(--muted); }
+
+.btn {
+  width: 100%;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  transition: all 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: #f0b840; transform: translateY(-1px); }
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+.btn-danger:hover { background: var(--danger); color: #fff; }
+
+.btn-ok {
+  background: transparent;
+  color: var(--ok);
+  border: 1px solid var(--ok);
+}
+.btn-ok:hover { background: var(--ok); color: #111; }
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+}
+
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+}
+.status-dot.ok { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+.status-dot.loading {
+  background: var(--accent);
+  animation: pulse 1s infinite;
+}
+.status-dot.error { background: var(--danger); }
+
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+#log {
+  background: var(--bg);
+  color: #5dde9a;
+  font-size: 10px;
+  font-family: 'Courier New', monospace;
+  padding: 8px 10px;
+  height: 100px;
+  overflow-y: auto;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  line-height: 1.6;
+}
+
+#log::-webkit-scrollbar { width: 3px; }
+#log::-webkit-scrollbar-thumb { background: var(--border); }
+
+#resultadoContainer {
+  margin-top: 4px;
+}
+
+.obstaculo-item {
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  border-left: 3px solid transparent;
+}
+
+.obstaculo-critico {
+  background: rgba(224,58,58,0.1);
+  border-left-color: var(--danger);
+}
+
+.obstaculo-ok {
+  background: rgba(46,207,122,0.08);
+  border-left-color: var(--ok);
+}
+
+.resumo-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.resumo-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+}
+
+.resumo-card .num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.resumo-card .num.critico { color: var(--danger); }
+.resumo-card .num.ok-num { color: var(--ok); }
+
+.resumo-card .label-r {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
+}
+
+.resumo-card.clicavel {
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.resumo-card.clicavel:hover {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 2px rgba(217,48,37,0.15);
+}
+.resumo-card.clicavel.ativo {
+  border-color: var(--danger);
+  background: rgba(217,48,37,0.07);
+  box-shadow: 0 0 0 2px rgba(217,48,37,0.2);
+}
+.resumo-card.clicavel.ativo .label-r {
+  color: var(--danger);
+}
+.filtro-hint {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+.export-area {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 6px;
+}
+
+.export-link {
+  font-size: 11px;
+  color: var(--accent);
+  word-break: break-all;
+  margin-top: 6px;
+  display: block;
+  text-decoration: none;
+  line-height: 1.4;
+}
+.export-link:hover { text-decoration: underline; }
+
+.copy-btn {
+  font-size: 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 6px;
+  font-family: 'Barlow', sans-serif;
+  transition: all 0.15s;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+#map { flex: 1; }
+
+.footer {
+  padding: 10px 16px;
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+
+.pac-container {
+  background: var(--surface2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  font-family: 'Barlow', sans-serif !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+}
+.pac-item {
+  color: var(--text) !important;
+  border-top: 1px solid var(--border) !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+}
+.pac-item:hover { background: var(--surface) !important; }
+.pac-item-query { color: var(--accent) !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo-transpes.png" alt="Logo">
+  <span class="header-title">TRANSPES GO</span>
+  <span class="header-sub">Sistema de análise de rota e obstáculos</span>
+</header>
+
+<div class="container">
+
+  <div class="panel">
+    <div class="panel-scroll">
+
+      <div class="section">
+        <div class="status-bar">
+          <div class="status-dot loading" id="statusDot"></div>
+          <span id="status">Inicializando...</span>
+        </div>
+        <div id="log"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Definir rota</div>
+        <label>Origem</label>
+        <input id="origem" type="text" placeholder="Endereço de origem">
+        <label>Destino</label>
+        <input id="destino" type="text" placeholder="Endereço de destino">
+        <button id="btnCalcular" class="btn btn-primary" onclick="calcularRota()">
+          Calcular rota
+        </button>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Parâmetros do veículo</div>
+        <label>Altura do caminhão (m)</label>
+        <input id="alturaCaminhao" type="number" step="0.01" placeholder="Ex: 4.40">
+        <button id="btnVerificar" class="btn btn-secondary" onclick="verificarObstaculosNaRota()">
+          Verificar obstáculos na rota
+        </button>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Exportar</div>
+
+        <button class="btn btn-ok" onclick="compartilharRota()" id="btnCompartilhar">
+          Compartilhar rota
+        </button>
+
+        <div class="export-area" id="linkArea" style="display:none">
+          <div style="font-size:11px; color:var(--muted); margin-bottom:4px">Link da rota (abre no Transpes GO com tudo pronto):</div>
+          <span id="linkCompartilhado" class="export-link" style="cursor:default">Link não gerado ainda</span>
+          <button class="copy-btn" onclick="copiarLink()">📋 Copiar link</button>
+        </div>
+      </div>
+
+      <div class="section" id="secaoResultados" style="display:none">
+        <div class="section-title">Obstáculos na rota</div>
+        <div class="resumo-bar">
+          <div class="resumo-card">
+            <div class="num" id="numTotal">0</div>
+            <div class="label-r">Total encontrado</div>
+          </div>
+          <div class="resumo-card clicavel" id="cardCritico" onclick="toggleFiltrosCriticos()" title="Clique para filtrar só os críticos">
+            <div class="num critico" id="numCritico">0</div>
+            <div class="label-r">Críticos</div>
+          </div>
+        </div>
+        <div class="filtro-hint" id="filtroHint" style="display:none">Mostrando apenas obstáculos críticos — clique em Críticos para ver todos</div>
+        <div id="resultadoContainer"></div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      Desenvolvido por <strong>Caio Bertolato Pereira</strong> — caio.pereira@transpes.com.br
+    </div>
+  </div>
+
+  <div id="map"></div>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG
+   ========================================================= */
+const CSV_URL_1 =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSmLH9trIDCxy9l_OsUyoHjld5rhAZgYVesTzQu8TGxpuoIRMSLkwwgE-ln1Ux3exuQIIquyzuBb-y3/pub?output=csv"
+  + "&t=" + Date.now();
+
+const CSV_URL_2 =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjaCB7K-3Zz9YY4XhIX6sPCqqywoHdZkdz0VPSGyf0_a2C8Zq0Xplzwb7Frh8L--AqFBYJX-MTqxAr/pub?output=csv"
+  + "&t=" + Date.now();
+
+const GOOGLE_MAPS_KEY = "AIzaSyAsCCdeA0KSgHffeuSmsDyaGT86ZJytIz4";
+const MAX_WAYPOINTS_PER_REQUEST = 8;
+const OBSTACLE_DISTANCE_METERS = 150;
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+let obstacles = [];
+let map;
+let directionsService;
+let directionsRenderer;
+let rotaPolyline;
+let obstacleMarkers = [];
+let carregamentoEmAndamento = false;
+let basesCarregadas = false;
+let rotaAtual = null;
+let obstaculosNaRota = [];
+let rotaPathDenso = [];
+let marcadorPosicao = null;
+let circuloPrecisao = null;
+let watchIdGeo = null;
+let filtroCriticosAtivo = false;
+
+/* =========================================================
+   UTILS
+   ========================================================= */
+function $(id) {
+  return document.getElementById(id);
+}
+
+function formatTime() {
+  return new Date().toLocaleTimeString("pt-BR", { hour12: false });
+}
+
+function log(msg) {
+  const logArea = $("log");
+  logArea.innerHTML += `[${formatTime()}] ${msg}<br>`;
+  logArea.scrollTop = logArea.scrollHeight;
+}
+
+function setStatus(msg, tipo = "ok") {
+  $("status").innerText = msg;
+  const dot = $("statusDot");
+  dot.className = "status-dot " + tipo;
+}
+
+function setLoadingState(loading) {
+  carregamentoEmAndamento = loading;
+  updateActionButtons();
+}
+
+function onEnter(action) {
+  return event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      action();
+    }
+  };
+}
+
+function decodeBase64Utf8(value) {
+  try {
+    const text = atob(value);
+    return decodeURIComponent(Array.from(text, c => `%${c.charCodeAt(0).toString(16).padStart(2, "0")}`).join(""));
+  } catch {
+    return null;
+  }
+}
+
+function requestRoute(options) {
+  return new Promise((resolve, reject) => {
+    directionsService.route(options, (response, status) => {
+      if (status === "OK" && response?.routes?.length) {
+        resolve(response);
+      } else {
+        reject(new Error(status || "Erro ao buscar rota"));
+      }
+    });
+  });
+}
+
+function normalizarTexto(texto) {
+  return String(texto || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\w]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function parseNumeroFlex(valor) {
+  if (valor === null || valor === undefined) return NaN;
+  const texto = String(valor).trim();
+  if (!texto) return NaN;
+  if (texto.includes(",") && texto.includes(".")) {
+    return Number(texto.replace(/\./g, "").replace(",", "."));
+  }
+  if (texto.includes(",") && !texto.includes(".")) {
+    return Number(texto.replace(",", "."));
+  }
+  return Number(texto);
+}
+
+function coordenadasValidas(lat, lng) {
+  return Number.isFinite(lat) && Number.isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+}
+
+function corrigirCoordenadasBrasil(lat, lng) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return { lat, lng };
+  return { lat: lat > 0 ? -lat : lat, lng: lng > 0 ? -lng : lng };
+}
+
+function distanciaSegmentoMetros(pLat, pLng, aLat, aLng, bLat, bLng) {
+  const cosLat = Math.cos(aLat * Math.PI / 180);
+  const metrosPorGrau = 111319.5;
+  const ax = 0;
+  const ay = 0;
+  const bx = (bLng - aLng) * metrosPorGrau * cosLat;
+  const by = (bLat - aLat) * metrosPorGrau;
+  const px = (pLng - aLng) * metrosPorGrau * cosLat;
+  const py = (pLat - aLat) * metrosPorGrau;
+  const ab2 = bx * bx + by * by;
+
+  if (ab2 === 0) return Math.hypot(px, py);
+
+  const t = Math.max(0, Math.min(1, (px * bx + py * by) / ab2));
+  const closestX = ax + t * bx;
+  const closestY = ay + t * by;
+  return Math.hypot(px - closestX, py - closestY);
+}
+
+function estaPertoDaRota(lat, lng) {
+  const path = rotaPathDenso.length > 0
+    ? rotaPathDenso
+    : (rotaPolyline?.getPath ? rotaPolyline.getPath().getArray() : []);
+
+  if (path.length < 2) return false;
+
+  const getLat = ponto => (typeof ponto.lat === "function" ? ponto.lat() : ponto.lat);
+  const getLng = ponto => (typeof ponto.lng === "function" ? ponto.lng() : ponto.lng);
+
+  for (let i = 0; i < path.length - 1; i += 1) {
+    const aLat = getLat(path[i]);
+    const aLng = getLng(path[i]);
+    const bLat = getLat(path[i + 1]);
+    const bLng = getLng(path[i + 1]);
+    const distancia = distanciaSegmentoMetros(lat, lng, aLat, aLng, bLat, bLng);
+    if (distancia <= OBSTACLE_DISTANCE_METERS) return true;
+  }
+  return false;
+}
+
+function extrairPathDenso(directionsResult) {
+  const pontos = [];
+  try {
+    const legs = directionsResult?.routes?.[0]?.legs || [];
+    for (const leg of legs) {
+      for (const step of leg.steps || []) {
+        const stepPath = step.path || step.lat_lngs || [];
+        for (const ponto of stepPath) {
+          pontos.push({ lat: ponto.lat(), lng: ponto.lng() });
+        }
+      }
+    }
+  } catch {
+    // fallback silencioso
+  }
+
+  if (pontos.length === 0 && directionsResult?.routes?.[0]?.overview_path) {
+    for (const ponto of directionsResult.routes[0].overview_path) {
+      pontos.push({ lat: ponto.lat(), lng: ponto.lng() });
+    }
+  }
+  return pontos;
+}
+
+function obterConfiguracoesVeiculo() {
+  const altura = parseNumeroFlex($("alturaCaminhao").value);
+  return {
+    altura: Number.isFinite(altura) ? altura : null,
+    largura: null,
+    peso: null,
+    comprimento: null,
+    raioMinimo: null
+  };
+}
+
+function updateActionButtons() {
+  const hasRoute = Boolean(rotaAtual?.routes?.length);
+  const hasPath = rotaPathDenso.length > 0 || Boolean(rotaPolyline?.getPath?.()?.getLength());
+  const enabled = !carregamentoEmAndamento;
+
+  const setButton = (id, allow) => {
+    const button = $(id);
+    if (button) button.disabled = !allow;
+  };
+
+  setButton("btnCalcular", enabled);
+  setButton("btnVerificar", enabled && basesCarregadas && hasPath);
+  setButton("btnCompartilhar", enabled && hasRoute);
+}
+
+/* =========================================================
+   CSV
+   ========================================================= */
+function parseCSVLine(line) {
+  const result = [];
+  let current = "";
+  let insideQuotes = false;
+
+  for (const caractere of line) {
+    if (caractere === '"') {
+      insideQuotes = !insideQuotes;
+    } else if (caractere === "," && !insideQuotes) {
+      result.push(current);
+      current = "";
+    } else {
+      current += caractere;
+    }
+  }
+
+  result.push(current);
+  return result.map(valor => valor.replace(/^"|"$/g, "").trim());
+}
+
+function csvToObjects(csv) {
+  const texto = String(csv || "").replace(/^\uFEFF/, "");
+  const linhas = texto.split(/\r?\n/).map(linha => linha.trim()).filter(linha => linha.length > 0);
+  if (!linhas.length) return [];
+
+  const cabecalhos = parseCSVLine(linhas[0]).map(normalizarTexto);
+  return linhas.slice(1).map(linha => {
+    const colunas = parseCSVLine(linha);
+    const objeto = {};
+    cabecalhos.forEach((cabecalho, indice) => {
+      if (cabecalho) objeto[cabecalho] = (colunas[indice] ?? "").trim();
+    });
+    return objeto;
+  });
+}
+
+function pegarCampo(objeto, aliases) {
+  for (const alias of aliases) {
+    const chave = normalizarTexto(alias);
+    if (objeto[chave] !== undefined && String(objeto[chave]).trim() !== "") {
+      return String(objeto[chave]).trim();
+    }
+  }
+  return "";
+}
+
+function extrairCoordenadasDaLinha(objeto) {
+  const latText = pegarCampo(objeto, ["latitude", "lat"]);
+  const lngText = pegarCampo(objeto, ["longitude", "lng", "lon", "long"]);
+  if (latText && lngText) {
+    return corrigirCoordenadasBrasil(parseNumeroFlex(latText), parseNumeroFlex(lngText));
+  }
+
+  const coordenadasText = pegarCampo(objeto, ["coordenadas", "coordenada", "coord", "coords"]);
+  if (coordenadasText) {
+    const partes = coordenadasText.replace(/\s+/g, "").split(/[,;]/);
+    if (partes.length >= 2) {
+      return corrigirCoordenadasBrasil(parseNumeroFlex(partes[0]), parseNumeroFlex(partes[1]));
+    }
+  }
+
+  return { lat: NaN, lng: NaN };
+}
+
+function extrairAlturasDaLinha(objeto) {
+  const candidatos = [
+    pegarCampo(objeto, ["altura_esq", "altura_esquerda"]),
+    pegarCampo(objeto, ["altura_cent", "altura_centro", "altura_central"]),
+    pegarCampo(objeto, ["altura_dir", "altura_direita"]),
+    pegarCampo(objeto, ["altura1"]),
+    pegarCampo(objeto, ["altura2"]),
+    pegarCampo(objeto, ["altura3"])
+  ];
+
+  return candidatos.map(parseNumeroFlex).filter(valor => Number.isFinite(valor));
+}
+
+function normalizarRegistroBase1(objeto) {
+  const { lat, lng } = extrairCoordenadasDaLinha(objeto);
+  const alturas = extrairAlturasDaLinha(objeto);
+  if (!coordenadasValidas(lat, lng) || !alturas.length) return null;
+
+  return {
+    origemBase: "Base histórica",
+    origemDetalhe: "Planilha principal de restrições",
+    via: pegarCampo(objeto, ["via", "rodovia", "trecho"]) || "Via não informada",
+    uf: pegarCampo(objeto, ["uf", "estado"]) || "",
+    km: pegarCampo(objeto, ["km", "quilometro"]) || "",
+    descricao: pegarCampo(objeto, ["descricao", "descrição"]) || "",
+    obs: pegarCampo(objeto, ["obs", "observacao"]) || "",
+    data: pegarCampo(objeto, ["data_da_afericao", "data_afericao", "data"]) || "",
+    fonte: pegarCampo(objeto, ["fonte", "evg", "arquivo_evg"]) || "",
+    lat,
+    lng,
+    alturas,
+    alturaMin: Math.min(...alturas)
+  };
+}
+
+function normalizarRegistroBase2(objeto) {
+  const { lat, lng } = extrairCoordenadasDaLinha(objeto);
+  const alturas = extrairAlturasDaLinha(objeto);
+  if (!coordenadasValidas(lat, lng) || !alturas.length) return null;
+
+  const fonte = pegarCampo(objeto, ["fonte"]);
+  const obs = pegarCampo(objeto, ["observacao", "observacao_livre", "obs"]);
+  const data = pegarCampo(objeto, ["data_hora", "datahora", "data"]);
+
+  return {
+    origemBase: "Registros Vistoria",
+    origemDetalhe: "Registros enviados pelo formulário",
+    via: "Vistoria de campo",
+    uf: "",
+    km: "",
+    descricao: obs || "Ponto de vistoria",
+    obs,
+    data,
+    fonte,
+    lat,
+    lng,
+    alturas,
+    alturaMin: Math.min(...alturas)
+  };
+}
+
+function deduplicarObstaculos(lista) {
+  const mapa = new Map();
+  for (const item of lista) {
+    const chave = [
+      item.origemBase,
+      item.via,
+      item.uf,
+      item.km,
+      item.lat.toFixed(6),
+      item.lng.toFixed(6),
+      item.alturaMin.toFixed(2),
+      item.data,
+      item.obs
+    ].join("|");
+
+    if (!mapa.has(chave)) mapa.set(chave, item);
+  }
+  return Array.from(mapa.values());
+}
+
+function extrairObstaculosDaBase(csv, origemTipo) {
+  return csvToObjects(csv)
+    .map(objeto => origemTipo === "base1" ? normalizarRegistroBase1(objeto) : normalizarRegistroBase2(objeto))
+    .filter(Boolean);
+}
+
+/* =========================================================
+   MAPA
+   ========================================================= */
+function initMap() {
+  map = new google.maps.Map($("map"), {
+    center: { lat: -19.5, lng: -44.0 },
+    zoom: 6,
+    mapTypeControl: true,
+    streetViewControl: false,
+    fullscreenControl: true
+  });
+
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer({
+    draggable: true,
+    polylineOptions: { strokeColor: "#1a73e8", strokeWeight: 4, strokeOpacity: 0.9 }
+  });
+  directionsRenderer.setMap(map);
+
+  directionsRenderer.addListener("directions_changed", () => {
+    const directions = directionsRenderer.getDirections();
+    if (!directions?.routes?.length) return;
+
+    rotaAtual = directions;
+    rotaPathDenso = extrairPathDenso(directions);
+
+    if (rotaPolyline) rotaPolyline.setMap(null);
+    rotaPolyline = new google.maps.Polyline({ path: directions.routes[0].overview_path });
+
+    log(`>> Rota alterada — recalculando obstáculos (${rotaPathDenso.length} pts)`);
+    if (parseNumeroFlex($("alturaCaminhao").value) > 0) {
+      verificarObstaculosNaRota(true);
+    } else {
+      updateActionButtons();
+    }
+  });
+
+  const options = {
+    componentRestrictions: { country: "br" },
+    fields: ["formatted_address", "geometry"],
+    types: ["geocode"]
+  };
+
+  new google.maps.places.Autocomplete($("origem"), options);
+  new google.maps.places.Autocomplete($("destino"), options);
+
+  $("origem").addEventListener("keydown", onEnter(calcularRota));
+  $("destino").addEventListener("keydown", onEnter(calcularRota));
+  $("alturaCaminhao").addEventListener("keydown", onEnter(verificarObstaculosNaRota));
+
+  updateActionButtons();
+  log("Mapa inicializado");
+  setStatus("Carregando bases...", "loading");
+  carregarTodasAsBases();
+  iniciarGeolocalizacao();
+}
+
+function iniciarGeolocalizacao() {
+  if (!navigator.geolocation) {
+    log("Geolocalização não suportada pelo navegador");
+    return;
+  }
+
+  const options = {
+    enableHighAccuracy: true,
+    maximumAge: 10000,
+    timeout: 15000
+  };
+
+  navigator.geolocation.getCurrentPosition(atualizarPosicao, erroGeolocalizacao, options);
+  watchIdGeo = navigator.geolocation.watchPosition(atualizarPosicao, erroGeolocalizacao, options);
+}
+
+function atualizarPosicao(posicao) {
+  const lat = posicao.coords.latitude;
+  const lng = posicao.coords.longitude;
+  const precisao = posicao.coords.accuracy;
+  const latLng = new google.maps.LatLng(lat, lng);
+
+  if (!marcadorPosicao) {
+    marcadorPosicao = new google.maps.Marker({
+      position: latLng,
+      map,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: "#4285F4",
+        fillOpacity: 1,
+        strokeColor: "#ffffff",
+        strokeWeight: 2,
+        scale: 8
+      },
+      title: "Você está aqui",
+      zIndex: 999
+    });
+
+    circuloPrecisao = new google.maps.Circle({
+      map,
+      center: latLng,
+      radius: precisao,
+      fillColor: "#4285F4",
+      fillOpacity: 0.08,
+      strokeColor: "#4285F4",
+      strokeOpacity: 0.25,
+      strokeWeight: 1
+    });
+
+    log("📍 Posição detectada — marcador ativo");
+  } else {
+    marcadorPosicao.setPosition(latLng);
+    circuloPrecisao.setCenter(latLng);
+    circuloPrecisao.setRadius(precisao);
+  }
+}
+
+function erroGeolocalizacao(err) {
+  const mensagens = {
+    1: "Permissão de localização negada",
+    2: "Posição não disponível",
+    3: "Tempo esgotado ao obter localização"
+  };
+  log(`⚠️ Geo: ${mensagens[err.code] || err.message}`);
+}
+
+/* =========================================================
+   ROTA
+   ========================================================= */
+async function calcularRota() {
+  const origemText = $("origem").value.trim();
+  const destinoText = $("destino").value.trim();
+  if (!origemText || !destinoText) {
+    alert("Preencha origem e destino.");
+    return;
+  }
+
+  setStatus("Calculando rota...", "loading");
+  setLoadingState(true);
+  if (directionsRenderer) directionsRenderer.setMap(map);
+
+  try {
+    const resposta = await requestRoute({
+      origin: origemText,
+      destination: destinoText,
+      travelMode: "DRIVING"
+    });
+
+    aplicarRotaNaInterface(resposta);
+    log(`🛣️ Rota calculada (${rotaPathDenso.length} pontos densos)`);
+    setStatus("Rota calculada", "ok");
+
+    if (parseNumeroFlex($("alturaCaminhao").value) > 0) {
+      verificarObstaculosNaRota(true);
+    }
+  } catch (erro) {
+    log(`ERRO — Rota não encontrada: ${String(erro?.message || erro)}`);
+    setStatus("Erro ao calcular rota", "error");
+  } finally {
+    setLoadingState(false);
+  }
+}
+
+function aplicarRotaNaInterface(directionsResult) {
+  directionsRenderer.setDirections(directionsResult);
+  rotaAtual = directionsResult;
+  rotaPathDenso = extrairPathDenso(directionsResult);
+
+  if (rotaPolyline) rotaPolyline.setMap(null);
+  rotaPolyline = new google.maps.Polyline({ path: directionsResult.routes[0].overview_path });
+}
+
+/* =========================================================
+   OBSTÁCULOS
+   ========================================================= */
+function limparMarcadores() {
+  obstacleMarkers.forEach(marcador => marcador.setMap(null));
+  obstacleMarkers = [];
+}
+
+function resetarEstadoObstaculos() {
+  limparMarcadores();
+  $("resultadoContainer").innerHTML = "";
+  obstaculosNaRota = [];
+  filtroCriticosAtivo = false;
+
+  const cardCritico = $("cardCritico");
+  if (cardCritico) cardCritico.classList.remove("ativo");
+
+  const hint = $("filtroHint");
+  if (hint) hint.style.display = "none";
+}
+
+function criarMarcadorObstaculo(obstaculo, alturaVeiculo) {
+  const position = new google.maps.LatLng(obstaculo.lat, obstaculo.lng);
+  const marker = new google.maps.Marker({
+    map,
+    position,
+    icon: obstaculo.critico
+      ? "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+      : "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+    title: `${obstaculo.via || "Via"} | ${obstaculo.critico ? "CRÍTICO" : "OK"}`
+  });
+
+  const infoWindow = new google.maps.InfoWindow({
+    content: criarConteudoInfoObstaculo(obstaculo, alturaVeiculo)
+  });
+
+  marker.addListener("mouseover", () => infoWindow.open(map, marker));
+  marker.addListener("mouseout", () => infoWindow.close());
+  obstacleMarkers.push(marker);
+}
+
+function criarConteudoInfoObstaculo(obstaculo, alturaVeiculo) {
+  return `
+    <div style="font-size:12px;line-height:1.5;min-width:210px">
+      <strong>${obstaculo.via || "Via não informada"}</strong><br>
+      <span style="color:#666">${obstaculo.origemBase}</span><br>
+      ${obstaculo.uf ? `UF: <b>${obstaculo.uf}</b><br>` : ""}
+      ${obstaculo.km ? `KM: <b>${obstaculo.km}</b><br>` : ""}
+      ${obstaculo.descricao ? `Descrição: ${obstaculo.descricao}<br>` : ""}
+      ${obstaculo.data ? `Data: ${obstaculo.data}<br>` : ""}
+      ${obstaculo.obs ? `Obs.: ${obstaculo.obs}<br>` : ""}
+      ${obstaculo.fonte ? `Fonte: <b>${obstaculo.fonte}</b><br>` : ""}
+      Coordenada: <b>${obstaculo.lat.toFixed(5)}, ${obstaculo.lng.toFixed(5)}</b><br>
+      <br>
+      ${obstaculo.alturas.map((altura, indice) => `Altura ${["Esquerda", "Central", "Direita"][indice] ?? indice + 1}: ${altura.toFixed(2)} m`).join("<br>")}<br><br>
+      Altura do conjunto: <b>${alturaVeiculo.toFixed(2)} m</b><br>
+      Mín. registrada: <b>${obstaculo.alturaMin.toFixed(2)} m</b><br>
+      <b style="color:${obstaculo.critico ? "red" : "green"}">${obstaculo.critico ? "BLOQUEANTE" : "OK"}</b>
+    </div>`;
+}
+
+function verificarObstaculosNaRota(skipAlert = false) {
+  if (carregamentoEmAndamento) {
+    if (!skipAlert) alert("Aguarde o carregamento das bases.");
+    return;
+  }
+  if (!basesCarregadas) {
+    if (!skipAlert) alert("Bases não carregadas.");
+    return;
+  }
+  if (rotaPathDenso.length === 0 && !rotaPolyline) {
+    if (!skipAlert) alert("Calcule a rota primeiro.");
+    return;
+  }
+
+  const configuracoesVeiculo = obterConfiguracoesVeiculo();
+  if (configuracoesVeiculo.altura === null) {
+    if (!skipAlert) alert("Informe a altura do conjunto.");
+    return;
+  }
+
+  resetarEstadoObstaculos();
+
+  obstacles.forEach(obstaculo => {
+    if (!estaPertoDaRota(obstaculo.lat, obstaculo.lng)) return;
+    obstaculosNaRota.push({ ...obstaculo, critico: obstaculo.alturaMin < configuracoesVeiculo.altura });
+  });
+
+  const criticos = obstaculosNaRota.filter(obstaculo => obstaculo.critico).length;
+  $("numTotal").innerText = obstaculosNaRota.length;
+  $("numCritico").innerText = criticos;
+  $("secaoResultados").style.display = "block";
+
+  obstaculosNaRota.forEach(obstaculo => criarMarcadorObstaculo(obstaculo, configuracoesVeiculo.altura));
+  renderizarLista();
+
+  log(`Obstáculos na rota: ${obstaculosNaRota.length} (${criticos} críticos)`);
+  setStatus(`Verificação concluída · ${criticos} crítico(s)`, criticos > 0 ? "error" : "ok");
+  updateActionButtons();
+}
+
+function toggleFiltrosCriticos() {
+  const criticos = obstaculosNaRota.filter(obstaculo => obstaculo.critico).length;
+  if (!criticos) return;
+
+  filtroCriticosAtivo = !filtroCriticosAtivo;
+  const card = $("cardCritico");
+  const hint = $("filtroHint");
+
+  if (filtroCriticosAtivo) {
+    card.classList.add("ativo");
+    hint.style.display = "block";
+  } else {
+    card.classList.remove("ativo");
+    hint.style.display = "none";
+  }
+
+  renderizarLista();
+}
+
+function renderizarLista() {
+  const container = $("resultadoContainer");
+  container.innerHTML = "";
+
+  const lista = filtroCriticosAtivo
+    ? obstaculosNaRota.filter(obstaculo => obstaculo.critico)
+    : obstaculosNaRota;
+
+  lista.forEach(obstaculo => {
+    const item = document.createElement("div");
+    item.className = `obstaculo-item ${obstaculo.critico ? "obstaculo-critico" : "obstaculo-ok"}`;
+    item.innerHTML = `
+      <strong>${obstaculo.critico ? "🚫" : "✅"} ${obstaculo.via || "Via não informada"}</strong><br>
+      ${obstaculo.uf ? `UF: ${obstaculo.uf} · ` : ""}${obstaculo.km ? `KM: ${obstaculo.km}<br>` : "<br>"}
+      ${obstaculo.descricao ? `${obstaculo.descricao}<br>` : ""}
+      ${obstaculo.obs ? `Obs.: ${obstaculo.obs}<br>` : ""}
+      ${obstaculo.fonte ? `Fonte: <b>${obstaculo.fonte}</b><br>` : ""}
+      Coordenadas: ${obstaculo.lat.toFixed(5)}, ${obstaculo.lng.toFixed(5)}<br>
+      Altura mín.: <b>${obstaculo.alturaMin.toFixed(2)} m</b> · Status: <b>${obstaculo.critico ? "CRÍTICO" : "OK"}</b>
+    `;
+    container.appendChild(item);
+  });
+}
+
+/* =========================================================
+   COMPARTILHAMENTO
+   ========================================================= */
+function coletarPontosDeArraste() {
+  const route = rotaAtual?.routes?.[0];
+  if (!route?.legs) return [];
+
+  const pontos = [];
+  route.legs.forEach((leg, legIndex) => {
+    (leg.via_waypoints || []).forEach(wp => {
+      pontos.push({
+        lat: typeof wp.lat === "function" ? wp.lat() : wp.lat,
+        lng: typeof wp.lng === "function" ? wp.lng() : wp.lng,
+        legIndex
+      });
+    });
+  });
+  return pontos;
+}
+
+function indiceMaisProximoNoPath(path, lat, lng) {
+  let bestIndex = 0;
+  let bestDistance = Infinity;
+  for (let index = 0; index < path.length; index += 1) {
+    const pLat = typeof path[index].lat === "function" ? path[index].lat() : path[index].lat;
+    const pLng = typeof path[index].lng === "function" ? path[index].lng() : path[index].lng;
+    const distance = Math.hypot(pLat - lat, pLng - lng);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestIndex = index;
+    }
+  }
+  return bestIndex;
+}
+
+function montarPontosParaCompartilhamento(route) {
+  const fullPath = route.overview_path;
+  const MAX_POINTS = 100;
+  const arrastes = coletarPontosDeArraste();
+  const arrastesMapeados = arrastes.map(item => ({
+    lat: item.lat,
+    lng: item.lng,
+    pathIdx: indiceMaisProximoNoPath(fullPath, item.lat, item.lng)
+  }));
+  arrastesMapeados.sort((a, b) => a.pathIdx - b.pathIdx);
+
+  const interior = fullPath.slice(1, fullPath.length - 1);
+  const slotsLivres = Math.max(0, MAX_POINTS - arrastesMapeados.length);
+  let amostrados = [];
+
+  if (interior.length <= slotsLivres) {
+    amostrados = interior.map(ponto => ({
+      lat: typeof ponto.lat === "function" ? ponto.lat() : ponto.lat,
+      lng: typeof ponto.lng === "function" ? ponto.lng() : ponto.lng,
+      pathIdx: fullPath.indexOf(ponto)
+    }));
+  } else if (slotsLivres > 0) {
+    const step = (interior.length - 1) / (slotsLivres - 1);
+    for (let index = 0; index < slotsLivres; index += 1) {
+      const itemIndex = Math.min(Math.round(index * step), interior.length - 1);
+      const ponto = interior[itemIndex];
+      amostrados.push({
+        lat: typeof ponto.lat === "function" ? ponto.lat() : ponto.lat,
+        lng: typeof ponto.lng === "function" ? ponto.lng() : ponto.lng,
+        pathIdx: itemIndex + 1
+      });
+    }
+  }
+
+  const todos = [...arrastesMapeados, ...amostrados];
+  todos.sort((a, b) => a.pathIdx - b.pathIdx);
+
+  const deduplicados = [];
+  const DEDUP_GRAUS = 0.00005;
+  for (const ponto of todos) {
+    const ultimo = deduplicados[deduplicados.length - 1];
+    if (!ultimo || Math.abs(ponto.lat - ultimo.lat) > DEDUP_GRAUS || Math.abs(ponto.lng - ultimo.lng) > DEDUP_GRAUS) {
+      deduplicados.push(ponto);
+    }
+  }
+
+  let pontosFinal = deduplicados;
+  if (pontosFinal.length > MAX_POINTS) {
+    const setArrastes = new Set(arrastesMapeados.map(ponto => `${ponto.lat.toFixed(6)},${ponto.lng.toFixed(6)}`));
+    const protegidos = pontosFinal.filter(ponto => setArrastes.has(`${ponto.lat.toFixed(6)},${ponto.lng.toFixed(6)}`));
+    const livres = pontosFinal.filter(ponto => !setArrastes.has(`${ponto.lat.toFixed(6)},${ponto.lng.toFixed(6)}`));
+    const slotsRestantes = MAX_POINTS - protegidos.length;
+
+    let livresAmostrados = [];
+    if (livres.length <= slotsRestantes) {
+      livresAmostrados = livres;
+    } else {
+      const step = (livres.length - 1) / (slotsRestantes - 1);
+      for (let index = 0; index < slotsRestantes; index += 1) {
+        livresAmostrados.push(livres[Math.min(Math.round(index * step), livres.length - 1)]);
+      }
+    }
+
+    pontosFinal = [...protegidos, ...livresAmostrados];
+    pontosFinal.sort((a, b) => a.pathIdx - b.pathIdx);
+  }
+
+  return pontosFinal.map(ponto => [+ponto.lat.toFixed(6), +ponto.lng.toFixed(6)]);
+}
+
+function compartilharRota() {
+  const origem = $("origem").value.trim();
+  const destino = $("destino").value.trim();
+  const altura = $("alturaCaminhao").value.trim();
+
+  if (!origem || !destino) {
+    alert("Preencha origem e destino antes de compartilhar.");
+    return;
+  }
+  if (!rotaAtual?.routes?.[0]) {
+    alert("Calcule a rota primeiro.");
+    return;
+  }
+
+  const route = rotaAtual.routes[0];
+  const pontos = montarPontosParaCompartilhamento(route);
+  const pontosEnc = encodeDelta(pontos);
+  const estado = { o: origem, d: destino, a: altura, p: pontosEnc };
+
+  comprimirEstado(estado).then(payload => {
+    const base = window.location.href.split("?")[0];
+    const url = `${base}?r=${encodeURIComponent(payload)}`;
+
+    $("linkCompartilhado").innerText = url;
+    $("linkCompartilhado").dataset.url = url;
+    $("linkArea").style.display = "block";
+
+    log(`Link gerado: ${pontos.length} pts · ${url.length} chars`);
+  }).catch(erro => {
+    log(`ERRO ao gerar link: ${erro.message}`);
+  });
+}
+
+function encodeDelta(pontos) {
+  if (!pontos.length) return "";
+  let refLat = 0;
+  let refLng = 0;
+  const parts = [];
+
+  for (const [lat, lng] of pontos) {
+    const iLat = Math.round(lat * 1e5);
+    const iLng = Math.round(lng * 1e5);
+    parts.push(`${iLat - refLat},${iLng - refLng}`);
+    refLat = iLat;
+    refLng = iLng;
+  }
+
+  return parts.join(";");
+}
+
+function decodeDelta(str) {
+  if (!str) return [];
+  let refLat = 0;
+  let refLng = 0;
+  return str.split(";").map(part => {
+    const [dLat, dLng] = part.split(",").map(Number);
+    refLat += dLat;
+    refLng += dLng;
+    return [refLat / 1e5, refLng / 1e5];
+  });
+}
+
+async function comprimirEstado(estado) {
+  const json = JSON.stringify(estado);
+  const bytes = new TextEncoder().encode(json);
+
+  if (typeof CompressionStream !== "undefined") {
+    const stream = new CompressionStream("deflate-raw");
+    const writer = stream.writable.getWriter();
+    writer.write(bytes);
+    writer.close();
+    const compressed = await new Response(stream.readable).arrayBuffer();
+    const b64 = btoa(String.fromCharCode(...new Uint8Array(compressed)))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=/g, "");
+    return `z2.${b64}`;
+  }
+
+  const b64 = btoa(unescape(encodeURIComponent(json)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
+  return `p2.${b64}`;
+}
+
+async function descomprimirEstado(payload) {
+  if (payload.startsWith("z2.")) {
+    const b64 = payload.slice(3).replace(/-/g, "+").replace(/_/g, "/");
+    const binary = atob(b64);
+    const bytes = Uint8Array.from(binary, caractere => caractere.charCodeAt(0));
+    const stream = new DecompressionStream("deflate-raw");
+    const writer = stream.writable.getWriter();
+    writer.write(bytes);
+    writer.close();
+    const buffer = await new Response(stream.readable).arrayBuffer();
+    const objeto = JSON.parse(new TextDecoder().decode(buffer));
+    return normalizarEstado(objeto);
+  }
+
+  if (payload.startsWith("p2.")) {
+    const b64 = payload.slice(3).replace(/-/g, "+").replace(/_/g, "/");
+    const objeto = JSON.parse(decodeBase64Utf8(b64));
+    return normalizarEstado(objeto);
+  }
+
+  if (payload.startsWith("z.")) {
+    const b64 = payload.slice(2);
+    const binary = atob(b64);
+    const bytes = Uint8Array.from(binary, caractere => caractere.charCodeAt(0));
+    const stream = new DecompressionStream("deflate-raw");
+    const writer = stream.writable.getWriter();
+    writer.write(bytes);
+    writer.close();
+    const buffer = await new Response(stream.readable).arrayBuffer();
+    return JSON.parse(new TextDecoder().decode(buffer));
+  }
+
+  if (payload.startsWith("p.")) {
+    return JSON.parse(decodeBase64Utf8(payload.slice(2)));
+  }
+
+  return JSON.parse(decodeBase64Utf8(payload));
+}
+
+function normalizarEstado(objeto) {
+  if (objeto.o !== undefined) {
+    return {
+      origem: objeto.o || "",
+      destino: objeto.d || "",
+      altura: objeto.a || "",
+      polyline: "",
+      pontos: typeof objeto.p === "string" ? decodeDelta(objeto.p) : (objeto.p || [])
+    };
+  }
+  return objeto;
+}
+
+function copiarLink() {
+  const url = $("linkCompartilhado").dataset.url || $("linkCompartilhado").innerText;
+  navigator.clipboard.writeText(url).then(() => {
+    const button = document.querySelector(".copy-btn");
+    button.innerText = "Copiado!";
+    setTimeout(() => { button.innerText = "📋 Copiar link"; }, 2000);
+  }).catch(() => {
+    prompt("Copie o link abaixo:", url);
+  });
+}
+
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+async function carregarTodasAsBases() {
+  setLoadingState(true);
+  basesCarregadas = false;
+  obstacles = [];
+
+  try {
+    const [resposta1, resposta2] = await Promise.all([
+      fetch(CSV_URL_1, { cache: "no-store" }),
+      fetch(CSV_URL_2, { cache: "no-store" })
+    ]);
+
+    if (!resposta1.ok) throw new Error(`Falha base 1: ${resposta1.status}`);
+    if (!resposta2.ok) throw new Error(`Falha base 2: ${resposta2.status}`);
+
+    const [csv1, csv2] = await Promise.all([resposta1.text(), resposta2.text()]);
+    const base1 = extrairObstaculosDaBase(csv1, "base1");
+    const base2 = extrairObstaculosDaBase(csv2, "base2");
+    obstacles = deduplicarObstaculos([...base1, ...base2]);
+
+    log(`OK Base histórica: ${base1.length} registros`);
+    log(`OK Registros Vistoria: ${base2.length} registros`);
+    log(`OK Total consolidado: ${obstacles.length}`);
+    basesCarregadas = true;
+    setStatus("Bases carregadas — Sistema pronto", "ok");
+    updateActionButtons();
+    await restaurarRotaDaURL();
+  } catch (erro) {
+    basesCarregadas = false;
+    setStatus("Erro ao carregar bases", "error");
+    log(`ERRO — ${String(erro?.message || erro)}`);
+  } finally {
+    setLoadingState(false);
+  }
+}
+
+async function restaurarRotaDaURL() {
+  const payload = new URLSearchParams(window.location.search).get("r");
+  if (!payload) return;
+
+  try {
+    const estado = await descomprimirEstado(payload);
+    if (!estado) throw new Error("Link inválido");
+    const { origem, destino, altura, polyline = "", pontos = [] } = estado;
+
+    $("origem").value = origem || "";
+    $("destino").value = destino || "";
+    $("alturaCaminhao").value = altura || "";
+
+    if (!origem || !destino) return;
+
+    setStatus("Restaurando rota do link...", "loading");
+    setLoadingState(true);
+    log("🔍 Restaurando rota do link via DirectionsService...");
+
+    try {
+      await restaurarRota(origem, destino, pontos);
+    } catch (erroApi) {
+      log("⚠️ DirectionsService falhou — tentando fallback visual...");
+      if (polyline) {
+        restaurarPolylineFallback(polyline);
+      } else {
+        throw erroApi;
+      }
+    }
+  } catch (erro) {
+    log(`ERRO — Erro ao restaurar rota da URL: ${erro.message}`);
+    setStatus("Erro ao restaurar rota", "error");
+  } finally {
+    setLoadingState(false);
+  }
+}
+
+function restaurarPolylineFallback(encodedPolyline) {
+  if (!encodedPolyline || !google?.maps?.geometry?.encoding) {
+    throw new Error("Não foi possível decodificar a rota de fallback");
+  }
+
+  const path = google.maps.geometry.encoding.decodePath(encodedPolyline);
+  if (!path?.length) throw new Error("Polyline de fallback inválida");
+
+  if (directionsRenderer) directionsRenderer.setMap(null);
+  if (rotaPolyline) rotaPolyline.setMap(null);
+
+  rotaPolyline = new google.maps.Polyline({
+    path,
+    strokeColor: "#1a73e8",
+    strokeWeight: 4,
+    strokeOpacity: 0.9,
+    map
+  });
+
+  rotaAtual = {
+    routes: [{ overview_path: path, overview_polyline: { points: encodedPolyline } }]
+  };
+  rotaPathDenso = path.map(ponto => ({ lat: ponto.lat(), lng: ponto.lng() }));
+
+  const bounds = new google.maps.LatLngBounds();
+  path.forEach(ponto => bounds.extend(ponto));
+  map.fitBounds(bounds);
+
+  log(`🛣️ Rota restaurada via fallback visual (${rotaPathDenso.length} pts)`);
+  setStatus("Rota restaurada (fallback)", "ok");
+  updateActionButtons();
+
+  if (parseNumeroFlex($("alturaCaminhao").value) > 0) {
+    verificarObstaculosNaRota(true);
+  }
+}
+
+async function restaurarRota(origem, destino, pontos) {
+  if (!Array.isArray(pontos) || pontos.length === 0) return calcularRota();
+
+  const batches = [];
+  for (let index = 0; index < pontos.length; index += MAX_WAYPOINTS_PER_REQUEST) {
+    batches.push(pontos.slice(index, index + MAX_WAYPOINTS_PER_REQUEST));
+  }
+
+  let currentOrigin = origem;
+  let combinedPath = [];
+  let lastDirections = null;
+  let combinedDenso = [];
+
+  for (let index = 0; index < batches.length; index += 1) {
+    const batch = batches[index];
+    const isLastBatch = index === batches.length - 1;
+    const destination = isLastBatch
+      ? destino
+      : { lat: batch[batch.length - 1][0], lng: batch[batch.length - 1][1] };
+    const waypoints = isLastBatch
+      ? batch.map(([lat, lng]) => ({ location: { lat, lng }, stopover: false }))
+      : batch.slice(0, -1).map(([lat, lng]) => ({ location: { lat, lng }, stopover: false }));
+
+    const resposta = await requestRoute({
+      origin: currentOrigin,
+      destination,
+      travelMode: "DRIVING",
+      waypoints,
+      optimizeWaypoints: false
+    });
+
+    const path = resposta.routes[0].overview_path || [];
+    if (combinedPath.length && path.length) {
+      const ultimo = combinedPath[combinedPath.length - 1];
+      if (ultimo.lat() === path[0].lat() && ultimo.lng() === path[0].lng()) path.shift();
+    }
+
+    combinedPath = combinedPath.concat(path);
+    combinedDenso = combinedDenso.concat(extrairPathDenso(resposta));
+    currentOrigin = destination;
+    lastDirections = resposta;
+  }
+
+  if (!lastDirections) throw new Error("Não foi possível restaurar a rota");
+
+  if (directionsRenderer) directionsRenderer.setMap(null);
+  if (rotaPolyline) rotaPolyline.setMap(null);
+
+  rotaPolyline = new google.maps.Polyline({
+    path: combinedPath,
+    map,
+    strokeColor: "#1a73e8",
+    strokeWeight: 4,
+    strokeOpacity: 0.9
+  });
+
+  let encodedPolyline = "";
+  if (google?.maps?.geometry?.encoding && combinedPath.length) {
+    try {
+      encodedPolyline = google.maps.geometry.encoding.encodePath(new google.maps.MVCArray(combinedPath));
+    } catch {
+      encodedPolyline = lastDirections.routes[0]?.overview_polyline?.points || "";
+    }
+  }
+
+  rotaAtual = {
+    routes: [{ overview_path: combinedPath, overview_polyline: { points: encodedPolyline } }]
+  };
+  rotaPathDenso = combinedDenso.length > 0
+    ? combinedDenso
+    : combinedPath.map(ponto => ({ lat: ponto.lat(), lng: ponto.lng() }));
+
+  const bounds = new google.maps.LatLngBounds();
+  combinedPath.forEach(ponto => bounds.extend(ponto));
+  map.fitBounds(bounds);
+
+  log(`🛣️ Rota restaurada a partir do link (${rotaPathDenso.length} pts)`);
+  setStatus("Rota restaurada", "ok");
+  updateActionButtons();
+
+  if (parseNumeroFlex($("alturaCaminhao").value) > 0) {
+    verificarObstaculosNaRota(true);
+  }
+}
+</script>
+
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsCCdeA0KSgHffeuSmsDyaGT86ZJytIz4&libraries=geometry,places&callback=initMap"
+  async defer>
+</script>
+
+</body>
+</html>
