@@ -13,5 +13,9 @@ export const state = {
   marcadorPosicao: null,
   circuloPrecisao: null,
   watchIdGeo: null,
-  filtroCriticosAtivo: false
+  filtroCriticosAtivo: false,
+  userWaypoints: [],
+  dragWaypoints: [],
+  dragMarkers: [],
+  ignorarProximoDesvio: false
 };

@@ -1,6 +1,7 @@
 import { state } from './state.js';
 import { $, log, setStatus, decodeBase64Utf8, parseNumeroFlex } from './utils.js';
 import { calcularRota, restaurarRota, restaurarPolylineFallback } from './route.js';
+import { aplicarWaypointPayload } from './waypoints.js';
 
 export function coletarPontosDeArraste() {
   const route = state.rotaAtual?.routes?.[0];
@@ -122,7 +123,7 @@ export function compartilharRota() {
   const route = state.rotaAtual.routes[0];
   const pontos = montarPontosParaCompartilhamento(route);
   const pontosEnc = encodeDelta(pontos);
-  const estado = { o: origem, d: destino, a: altura, l: largura, p: pontosEnc };
+  const estado = { o: origem, d: destino, a: altura, l: largura, p: pontosEnc, w: state.userWaypoints.map(item => item.value).filter(Boolean) };
 
   comprimirEstado(estado).then(payload => {
     const base = window.location.href.split('?')[0];
@@ -237,6 +238,7 @@ export function normalizarEstado(objeto) {
       destino: objeto.d || '',
       altura: objeto.a || '',
       largura: objeto.l || '',
+      waypoints: Array.isArray(objeto.w) ? objeto.w : [],
       polyline: '',
       pontos: typeof objeto.p === 'string' ? decodeDelta(objeto.p) : (objeto.p || [])
     };
@@ -262,12 +264,16 @@ export async function restaurarRotaDaURL() {
   try {
     const estado = await descomprimirEstado(payload);
     if (!estado) throw new Error('Link inválido');
-    const { origem, destino, altura, largura = '', polyline = '', pontos = [] } = estado;
+    const { origem, destino, altura, largura = '', waypoints = [], polyline = '', pontos = [] } = estado;
 
     $('origem').value = origem || '';
     $('destino').value = destino || '';
     $('alturaCaminhao').value = altura || '';
     $('larguraConjunto').value = largura || '';
+    if (Array.isArray(waypoints) && waypoints.length) {
+      state.userWaypoints = waypoints.map(value => ({ value }));
+      aplicarWaypointPayload({ userWaypoints: waypoints, dragWaypoints: [] });
+    }
 
     if (!origem || !destino) return;
 

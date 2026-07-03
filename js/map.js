@@ -3,6 +3,7 @@ import { $, log, setStatus, onEnter, parseNumeroFlex } from './utils.js';
 import { calcularRota } from './route.js';
 import { verificarObstaculosNaRota } from './obstacles.js';
 import { updateActionButtons } from './ui.js';
+import { registrarDesvio, atualizarMarcadoresDesvios } from './waypoints.js';
 
 export function initMap() {
   state.map = new google.maps.Map($('map'), {
@@ -21,13 +22,34 @@ export function initMap() {
   state.directionsRenderer.setMap(state.map);
 
   state.directionsRenderer.addListener('directions_changed', () => {
+    if (state.ignorarProximoDesvio) {
+      state.ignorarProximoDesvio = false;
+      return;
+    }
+
     const directions = state.directionsRenderer.getDirections();
+    if (!directions?.routes?.length) return;
+    const legs = directions.routes[0].legs || [];
+    if (legs.length > 1) {
+      const lastLeg = legs[legs.length - 1];
+      if (lastLeg?.end_location) {
+        const points = directions.routes[0].overview_path || [];
+        if (points.length > 2) {
+          const lastPoint = points[points.length - 1];
+          const previousPoint = points[points.length - 2];
+          if (lastPoint && previousPoint) {
+            registrarDesvio(lastPoint);
+          }
+        }
+      }
+    }
     if (!directions?.routes?.length) return;
 
     state.rotaAtual = directions;
     state.rotaPathDenso = extrairPathDenso(directions);
 
     if (state.rotaPolyline) state.rotaPolyline.setMap(null);
+    atualizarMarcadoresDesvios();
     state.rotaPolyline = new google.maps.Polyline({ path: directions.routes[0].overview_path });
 
     log(`>> Rota alterada — recalculando obstáculos (${state.rotaPathDenso.length} pts)`);

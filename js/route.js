@@ -2,6 +2,7 @@ import { state } from './state.js';
 import { $, log, setStatus, parseNumeroFlex } from './utils.js';
 import { verificarObstaculosNaRota } from './obstacles.js';
 import { updateActionButtons } from './ui.js';
+import { getUserWaypointAddresses, getWaypointPayload } from './waypoints.js';
 
 export function requestRoute(options) {
   return new Promise((resolve, reject) => {
@@ -27,11 +28,14 @@ export async function calcularRota() {
   state.carregamentoEmAndamento = true;
   updateActionButtons();
   if (state.directionsRenderer) state.directionsRenderer.setMap(state.map);
+  state.userWaypoints = state.userWaypoints || [];
 
   try {
+    const waypoints = getUserWaypointAddresses();
     const resposta = await requestRoute({
       origin: origemText,
       destination: destinoText,
+      waypoints: waypoints.map(endereco => ({ location: endereco, stopover: true })),
       travelMode: 'DRIVING'
     });
 
@@ -52,6 +56,7 @@ export async function calcularRota() {
 }
 
 export function aplicarRotaNaInterface(directionsResult) {
+  state.ignorarProximoDesvio = true;
   state.directionsRenderer.setDirections(directionsResult);
   state.rotaAtual = directionsResult;
   state.rotaPathDenso = extrairPathDenso(directionsResult);
